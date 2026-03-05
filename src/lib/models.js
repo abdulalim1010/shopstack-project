@@ -48,6 +48,7 @@ export const UserModel = {
       name: userData.name,
       email: userData.email.toLowerCase(),
       password: hashedPassword,
+      role: userData.role || "user",
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -67,5 +68,43 @@ export const UserModel = {
    */
   async comparePassword(enteredPassword, storedPassword) {
     return bcrypt.compare(enteredPassword, storedPassword);
+  },
+
+  /**
+   * Update user role (for admin)
+   * @param {string} userId - User ID
+   * @param {string} role - New role
+   * @returns {Object|null} Updated user or null
+   */
+  async updateRole(userId, role) {
+    const client = await clientPromise;
+    const db = client.db(DB_NAME);
+    const { ObjectId } = await import("mongodb");
+    
+    const result = await db.collection(USERS_COLLECTION).findOneAndUpdate(
+      { _id: new ObjectId(userId) },
+      { $set: { role, updatedAt: new Date() } },
+      { returnDocument: "after" }
+    );
+    
+    if (result) {
+      const { password, ...userWithoutPassword } = result;
+      return userWithoutPassword;
+    }
+    return null;
+  },
+
+  /**
+   * Get all users (for admin)
+   * @returns {Array} Array of users
+   */
+  async getAllUsers() {
+    const client = await clientPromise;
+    const db = client.db(DB_NAME);
+    const users = await db.collection(USERS_COLLECTION)
+      .find({})
+      .project({ password: 0 })
+      .toArray();
+    return users;
   },
 };

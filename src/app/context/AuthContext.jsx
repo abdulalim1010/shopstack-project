@@ -97,6 +97,9 @@ export function AuthProvider({ children }) {
     return data;
   };
 
+  // Check if user is admin
+  const isAdmin = user?.role === "admin";
+
   // Logout function
   const logout = () => {
     localStorage.removeItem("token");
@@ -107,7 +110,7 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, token, loading, login, register, logout }}
+      value={{ user, token, loading, login, register, logout, isAdmin }}
     >
       {children}
     </AuthContext.Provider>

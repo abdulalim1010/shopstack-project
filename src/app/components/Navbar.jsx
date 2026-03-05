@@ -12,7 +12,7 @@ export default function Navbar() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
-  const { user, logout, loading } = useAuth();
+  const { user, logout, loading, isAdmin } = useAuth();
 
   const categories = ["Electronics", "Fashion", "Books", "Sports", "Home & Kitchen"];
 
@@ -39,7 +39,17 @@ export default function Navbar() {
                 <span>{user.name}</span>
               </button>
               {userMenuOpen && (
-                <div className="absolute right-0 mt-2 bg-white text-gray-800 shadow-lg rounded py-2 w-40 z-50">
+                <div className="absolute right-0 mt-2 bg-white text-gray-800 shadow-lg rounded py-2 w-48 z-50">
+                  {isAdmin && (
+                    <Link
+                      href="/admin/dashboard"
+                      className="block px-4 py-2 hover:bg-gray-100 flex items-center text-purple-600"
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      <FiUser className="mr-2" />
+                      Admin Dashboard
+                    </Link>
+                  )}
                   <Link
                     href="/profile"
                     className="block px-4 py-2 hover:bg-gray-100"

@@ -1,4 +1,4 @@
-import { getTokenFromRequest, verifyToken } from "@/lib/auth";
+import { getTokenFromRequest, verifyToken, isAdmin, getUserRole } from "@/lib/auth";
 import { UserModel } from "@/lib/models";
 
 export async function GET(request) {
@@ -21,31 +21,28 @@ export async function GET(request) {
       );
     }
 
-    const user = await UserModel.findById(decoded.id);
+    // Get user role from token
+    const userRole = getUserRole(decoded);
     
-    if (!user) {
+    // Debug: Log the role for troubleshooting
+    console.log("User role from token:", userRole);
+    
+    // Check if user is admin
+    if (!isAdmin(userRole)) {
       return Response.json(
-        { message: "User not found" },
-        { status: 404 }
+        { message: "Access denied. Admin only." },
+        { status: 403 }
       );
     }
 
-    // Return user without password
-    const { password, ...userWithoutPassword } = user;
+    const users = await UserModel.getAllUsers();
 
     return Response.json(
-      {
-        user: {
-          id: userWithoutPassword._id,
-          name: userWithoutPassword.name,
-          email: userWithoutPassword.email,
-          role: userWithoutPassword.role || "user",
-        },
-      },
+      { users },
       { status: 200 }
     );
   } catch (error) {
-    console.error("Auth check error:", error);
+    console.error("Get users error:", error);
     return Response.json(
       { message: "Internal server error" },
       { status: 500 }

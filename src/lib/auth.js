@@ -9,7 +9,7 @@ const JWT_SECRET = process.env.JWT_SECRET || "your-super-secret-key-change-in-pr
  */
 export function generateToken(user) {
   return jwt.sign(
-    { id: user._id, email: user.email, name: user.name },
+    { id: user._id, email: user.email, name: user.name, role: user.role || "user" },
     JWT_SECRET,
     { expiresIn: "7d" }
   );
@@ -39,4 +39,22 @@ export function getTokenFromRequest(request) {
     return authHeader.substring(7);
   }
   return null;
+}
+
+/**
+ * Check if user has admin role
+ * @param {string} role - User role
+ * @returns {boolean} True if user is admin
+ */
+export function isAdmin(role) {
+  return role === "admin";
+}
+
+/**
+ * Get user role from decoded token
+ * @param {Object} decoded - Decoded JWT token
+ * @returns {string} User role (defaults to 'user')
+ */
+export function getUserRole(decoded) {
+  return decoded?.role || "user";
 }

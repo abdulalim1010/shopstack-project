@@ -45,6 +45,7 @@ export async function POST(request) {
           id: userWithoutPassword._id,
           name: userWithoutPassword.name,
           email: userWithoutPassword.email,
+          role: userWithoutPassword.role || "user",
         },
         token,
       },
