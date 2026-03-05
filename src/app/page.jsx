@@ -1,11 +1,16 @@
 import Image from "next/image";
 import Banner from "./components/Banner";
+import MainProductsPage from "./mainproducts/page";
+import Footer from "./components/Footer";
+import TopRated from "./toprated/page";
 
 export default function Home() {
   return (
-    <div className="text-red-500 font-bold text-5xl">
-
-      <Banner/>
+    <div>
+      <Banner />
+      <MainProductsPage />
+<TopRated/>
+      <Footer/>
     </div>
   );
 }

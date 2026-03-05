@@ -1,13 +1,25 @@
 "use client";
+
 import { useState } from "react";
 import Link from "next/link";
-import { FiShoppingCart, FiSearch, FiMenu, FiX } from "react-icons/fi";
+import { FiShoppingCart, FiMenu, FiX, FiUser, FiLogOut } from "react-icons/fi";
+import { useAuth } from "../context/AuthContext";
+import AuthModal from "./AuthModal";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+
+  const { user, logout, loading } = useAuth();
 
   const categories = ["Electronics", "Fashion", "Books", "Sports", "Home & Kitchen"];
+
+  const handleLogout = () => {
+    logout();
+    setUserMenuOpen(false);
+  };
 
   return (
     <header className="w-full shadow-md">
@@ -15,13 +27,52 @@ export default function Navbar() {
       <div className="bg-gray-800 text-white px-4 py-2 flex justify-between items-center text-sm">
         <div className="font-bold text-lg">ShopStack</div>
         <div className="flex items-center space-x-3">
-          <a href="mailto:youremail@gmail.com" className="hover:underline">Gmail</a>
-          <Link href="/signin">
-            <button className="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded">Sign In</button>
-          </Link>
-          <Link href="/join">
-            <button className="bg-green-600 hover:bg-green-700 px-3 py-1 rounded">Join</button>
-          </Link>
+          {loading ? (
+            <span className="text-gray-400">Loading...</span>
+          ) : user ? (
+            <div className="relative">
+              <button
+                onClick={() => setUserMenuOpen(!userMenuOpen)}
+                className="flex items-center space-x-1 hover:text-blue-300"
+              >
+                <FiUser />
+                <span>{user.name}</span>
+              </button>
+              {userMenuOpen && (
+                <div className="absolute right-0 mt-2 bg-white text-gray-800 shadow-lg rounded py-2 w-40 z-50">
+                  <Link
+                    href="/profile"
+                    className="block px-4 py-2 hover:bg-gray-100"
+                    onClick={() => setUserMenuOpen(false)}
+                  >
+                    Profile
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center text-red-600"
+                  >
+                    <FiLogOut className="mr-2" />
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <>
+              <button
+                onClick={() => setAuthModalOpen(true)}
+                className="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded"
+              >
+                Sign In
+              </button>
+              <button
+                onClick={() => setAuthModalOpen(true)}
+                className="bg-green-600 hover:bg-green-700 px-3 py-1 rounded"
+              >
+                Join
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -111,6 +162,33 @@ export default function Navbar() {
             <li><Link href="/offers" className="block hover:text-blue-600">Offers</Link></li>
             <li><Link href="/contact" className="block hover:text-blue-600">Contact</Link></li>
 
+            {/* Mobile Auth Buttons */}
+            {user ? (
+              <li className="pt-2">
+                <button
+                  onClick={handleLogout}
+                  className="w-full bg-red-100 text-red-600 py-2 rounded hover:bg-red-200 flex items-center justify-center"
+                >
+                  <FiLogOut className="mr-2" /> Logout
+                </button>
+              </li>
+            ) : (
+              <li className="pt-2 flex space-x-2">
+                <button
+                  onClick={() => setAuthModalOpen(true)}
+                  className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+                >
+                  Sign In
+                </button>
+                <button
+                  onClick={() => setAuthModalOpen(true)}
+                  className="flex-1 bg-green-600 text-white py-2 rounded hover:bg-green-700"
+                >
+                  Join
+                </button>
+              </li>
+            )}
+
             {/* Mobile Search + Cart */}
             <li className="pt-2">
               <input
@@ -125,6 +203,9 @@ export default function Navbar() {
           </ul>
         )}
       </nav>
+
+      {/* Auth Modal */}
+      <AuthModal isOpen={authModalOpen} onClose={() => setAuthModalOpen(false)} />
     </header>
   );
 }
