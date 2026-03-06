@@ -28,11 +28,13 @@ export default function TopRated() {
                 alt={product.name}
                 className="w-full h-full object-cover transition duration-500 group-hover:opacity-0"
               />
-              <img
-                src={product.backImage}
-                alt={`${product.name} back`}
-                className="w-full h-full object-cover absolute top-0 left-0 opacity-0 transition duration-500 group-hover:opacity-100"
-              />
+              {product.backImage && (
+                <img
+                  src={product.backImage}
+                  alt={`${product.name} back`}
+                  className="w-full h-full object-cover absolute top-0 left-0 opacity-0 transition duration-500 group-hover:opacity-100"
+                />
+              )}
             </div>
 
             <div className="p-5">

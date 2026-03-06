@@ -4,6 +4,7 @@ import MainProductsPage from "./mainproducts/page";
 import Footer from "./components/Footer";
 import TopRated from "./toprated/page";
 import CustomerReviews from "./components/CustomerReviews";
+import DiscountSection from "./components/DiscountSection";
 
 export default function Home() {
   return (
@@ -12,7 +13,7 @@ export default function Home() {
       <MainProductsPage />
 <TopRated/>
 
-      
+     <DiscountSection/> 
       <CustomerReviews/>
       <Footer/>
     </div>

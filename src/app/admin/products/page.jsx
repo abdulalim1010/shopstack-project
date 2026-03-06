@@ -399,6 +399,7 @@ export default function AdminProducts() {
                     Front Image
                   </label>
                   <ImageUpload
+                    id="front-image-upload"
                     value={formData.frontImage}
                     onChange={(url) => setFormData({...formData, frontImage: url})}
                     label=""
@@ -410,6 +411,7 @@ export default function AdminProducts() {
                     Back Image
                   </label>
                   <ImageUpload
+                    id="back-image-upload"
                     value={formData.backImage}
                     onChange={(url) => setFormData({...formData, backImage: url})}
                     label=""

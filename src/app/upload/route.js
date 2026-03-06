@@ -11,8 +11,6 @@ export async function POST(request) {
 
     // Get Cloudinary credentials from environment variables
     const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-    const apiKey = process.env.CLOUDINARY_API_KEY;
-    const apiSecret = process.env.CLOUDINARY_API_SECRET;
     const uploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET || "shopstack_unsigned";
 
     if (!cloudName) {
@@ -28,22 +26,23 @@ export async function POST(request) {
     const base64 = buffer.toString("base64");
     const dataUri = `data:${file.type};base64,${base64}`;
 
-    // Upload to Cloudinary using unsigned upload
-    const uploadUrl = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload?upload_preset=${uploadPreset}`;
+    // Upload to Cloudinary using unsigned upload (form data)
+    const uploadUrl = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
+
+    const formDataToCloudinary = new FormData();
+    formDataToCloudinary.append("file", dataUri);
+    formDataToCloudinary.append("upload_preset", uploadPreset);
 
     const response = await fetch(uploadUrl, {
       method: "POST",
-      body: JSON.stringify({ file: dataUri }),
-      headers: {
-        "Content-Type": "application/json",
-      },
+      body: formDataToCloudinary,
     });
 
     if (!response.ok) {
       const error = await response.text();
       console.error("Cloudinary upload error:", error);
       return NextResponse.json(
-        { error: "Failed to upload image" },
+        { error: "Failed to upload image", details: error },
         { status: 500 }
       );
     }

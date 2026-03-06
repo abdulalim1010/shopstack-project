@@ -6,7 +6,8 @@ export default function ImageUpload({
   value = "", 
   onChange, 
   label = "Upload Image",
-  accept = "image/*"
+  accept = "image/*",
+  id = `image-upload-${Math.random().toString(36).substr(2, 9)}`
 }) {
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState(value);
@@ -39,7 +40,13 @@ export default function ImageUpload({
       }
     } catch (error) {
       console.error("Upload error:", error);
-      alert("Failed to upload image. Please try again.");
+      // Try to get error details from response
+      try {
+        const errorData = await response.json();
+        alert(errorData.error || errorData.details || "Failed to upload image. Please try again.");
+      } catch {
+        alert("Failed to upload image. Please try again.");
+      }
     } finally {
       setUploading(false);
     }
@@ -69,11 +76,11 @@ export default function ImageUpload({
             accept={accept}
             onChange={handleFileChange}
             className="hidden"
-            id="image-upload"
+            id={id}
           />
           
           <label
-            htmlFor="image-upload"
+            htmlFor={id}
             className={`inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg cursor-pointer bg-white hover:bg-gray-50 transition-colors ${
               uploading ? "opacity-50 cursor-not-allowed" : ""
             }`}

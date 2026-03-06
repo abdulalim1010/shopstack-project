@@ -48,7 +48,7 @@ export default function MainProductsPage() {
             {/* Product Image */}
             <div className="relative overflow-hidden h-56">
               <img
-                src={product.image}
+                src={product.frontImage}
                 alt={product.name}
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
