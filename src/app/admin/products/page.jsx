@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/app/context/AuthContext";
 import { useRouter } from "next/navigation";
+import ImageUpload from "@/app/components/ImageUpload";
 
 export default function AdminProducts() {
   const { user, isAdmin, loading } = useAuth();
@@ -395,25 +396,23 @@ export default function AdminProducts() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Front Image URL
+                    Front Image
                   </label>
-                  <input
-                    type="text"
+                  <ImageUpload
                     value={formData.frontImage}
-                    onChange={(e) => setFormData({...formData, frontImage: e.target.value})}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                    onChange={(url) => setFormData({...formData, frontImage: url})}
+                    label=""
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Back Image URL
+                    Back Image
                   </label>
-                  <input
-                    type="text"
+                  <ImageUpload
                     value={formData.backImage}
-                    onChange={(e) => setFormData({...formData, backImage: e.target.value})}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                    onChange={(url) => setFormData({...formData, backImage: url})}
+                    label=""
                   />
                 </div>
               </div>
