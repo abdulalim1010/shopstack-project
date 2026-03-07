@@ -13,42 +13,59 @@ export default function Navbar() {
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const pathname = usePathname();
+  const [searchQuery, setSearchQuery] = useState("");
 
+  const pathname = usePathname();
   const { user, logout, loading, isAdmin } = useAuth();
 
-  const categories = ["Helmets", "Wheels", "Parts", "Accessories", "Maintenance"];
+  const categories = [
+    "Helmets",
+    "Wheels",
+    "Parts",
+    "Accessories",
+    "Maintenance",
+  ];
 
   const handleLogout = () => {
     Swal.fire({
-      title: 'Logout?',
-      text: 'Are you sure you want to logout?',
-      icon: 'question',
+      title: "Logout?",
+      text: "Are you sure you want to logout?",
+      icon: "question",
       showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Yes, logout!',
-      cancelButtonText: 'Cancel'
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, logout!",
     }).then((result) => {
       if (result.isConfirmed) {
         logout();
         setUserMenuOpen(false);
         Swal.fire({
-          icon: 'success',
-          title: 'Logged Out!',
-          text: 'You have been logged out successfully.',
+          icon: "success",
+          title: "Logged Out!",
+          text: "You have been logged out successfully.",
           timer: 2000,
-          showConfirmButton: false
+          showConfirmButton: false,
         });
       }
     });
   };
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim().length >= 2) {
+      window.location.href = `/search?q=${encodeURIComponent(
+        searchQuery.trim()
+      )}`;
+    }
+  };
+
   return (
-    <header className="w-full shadow-md">
+    <header className="w-full fixed top-0 z-[9999] shadow-md">
+
       {/* Top Bar */}
-      <div className="bg-gray-800 text-white px-4 py-2 flex justify-between items-center text-sm">
+      <div className="bg-gray-900 text-white px-4 py-2 flex justify-between items-center text-sm relative z-[9999]">
         <div className="font-bold text-lg">ShopStack</div>
+
         <div className="flex items-center space-x-3">
           {loading ? (
             <span className="text-gray-400">Loading...</span>
@@ -61,8 +78,9 @@ export default function Navbar() {
                 <FiUser />
                 <span>{user.name}</span>
               </button>
+
               {userMenuOpen && (
-                <div className="absolute right-0 mt-2 bg-white text-gray-800 shadow-lg rounded py-2 w-48 z-50">
+                <div className="absolute right-0 mt-3 bg-white text-gray-800 shadow-xl rounded-lg py-2 w-48 z-[9999]">
                   {isAdmin && (
                     <Link
                       href="/admin/dashboard"
@@ -73,6 +91,7 @@ export default function Navbar() {
                       Admin Dashboard
                     </Link>
                   )}
+
                   <Link
                     href="/profile"
                     className="block px-4 py-2 hover:bg-gray-100"
@@ -80,6 +99,7 @@ export default function Navbar() {
                   >
                     Profile
                   </Link>
+
                   <button
                     onClick={handleLogout}
                     className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center text-red-600"
@@ -98,6 +118,7 @@ export default function Navbar() {
               >
                 Sign In
               </button>
+
               <button
                 onClick={() => setAuthModalOpen(true)}
                 className="bg-green-600 hover:bg-green-700 px-3 py-1 rounded"
@@ -109,29 +130,46 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Main Navigation */}
-      <nav className="bg-blue-600 shadow-sm sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center py-3">
-          
-          {/* Left: Logo */}
-          <div className="flex items-center">
-            <Link href="/" className="text-2xl font-bold text-white">ShopStack</Link>
-          </div>
+      {/* Main Navbar */}
+      <nav className="bg-blue-600 backdrop-blur-md z-[9998]">
+        <div className="max-w-7xl mx-auto px-4 flex justify-between items-center py-3">
 
-          {/* Center: Nav Items (Desktop) */}
+          {/* Logo */}
+          <Link href="/" className="text-2xl font-bold text-white">
+            ShopStack
+          </Link>
+
+          {/* Desktop Menu */}
           <ul className="hidden md:flex space-x-6 font-medium items-center">
-            <li><Link href="/" className={`hover:text-white transition ${pathname === '/' ? 'text-white font-bold' : 'text-blue-100'}`}>Home</Link></li>
+            <li>
+              <Link
+                href="/"
+                className={`hover:text-white ${
+                  pathname === "/" ? "text-white font-bold" : "text-blue-100"
+                }`}
+              >
+                Home
+              </Link>
+            </li>
 
-            {/* Products Dropdown */}
-            <li className="relative"
-                onMouseEnter={() => setCategoriesOpen(true)}
-                onMouseLeave={() => setCategoriesOpen(false)}>
-              <button className={`hover:text-white flex items-center transition ${pathname.startsWith('/products') ? 'text-white font-bold' : 'text-blue-100'}`}>Products ▼</button>
+            {/* Products */}
+            <li
+              className="relative"
+              onMouseEnter={() => setCategoriesOpen(true)}
+              onMouseLeave={() => setCategoriesOpen(false)}
+            >
+              <button className="text-blue-100 hover:text-white flex items-center">
+                Products ▼
+              </button>
+
               {categoriesOpen && (
-                <ul className="absolute top-full left-0 mt-2 bg-white border shadow-md py-2 w-44 z-50">
-                  {categories.map(cat => (
+                <ul className="absolute top-full left-0 mt-2 bg-white border shadow-lg py-2 w-44 rounded-md z-[9999]">
+                  {categories.map((cat) => (
                     <li key={cat}>
-                      <Link href={`/products/${cat.toLowerCase()}`} className="block px-4 py-2 hover:bg-gray-100">
+                      <Link
+                        href={`/products/${cat.toLowerCase()}`}
+                        className="block px-4 py-2 hover:bg-gray-100"
+                      >
                         {cat}
                       </Link>
                     </li>
@@ -140,26 +178,62 @@ export default function Navbar() {
               )}
             </li>
 
-            <li><Link href="/offers" className={`hover:text-white transition ${pathname === '/offers' ? 'text-white font-bold' : 'text-blue-100'}`}>Offers</Link></li>
-            <li><Link href="/contact" className={`hover:text-white transition ${pathname === '/contact' ? 'text-white font-bold' : 'text-blue-100'}`}>Contact</Link></li>
+            <li>
+              <Link
+                href="/offers"
+                className={`hover:text-white ${
+                  pathname === "/offers"
+                    ? "text-white font-bold"
+                    : "text-blue-100"
+                }`}
+              >
+                Offers
+              </Link>
+            </li>
+
+            <li>
+              <Link
+                href="/contact"
+                className={`hover:text-white ${
+                  pathname === "/contact"
+                    ? "text-white font-bold"
+                    : "text-blue-100"
+                }`}
+              >
+                Contact
+              </Link>
+            </li>
           </ul>
 
-          {/* Right: Search + Cart */}
+          {/* Right Side */}
           <div className="hidden md:flex items-center space-x-3">
-            <input
-              type="text"
-              placeholder="Search products..."
-              className="border border-blue-400 px-3 py-1 rounded w-64 focus:outline-none focus:ring-2 focus:ring-white bg-white/10 text-white placeholder-blue-200"
-            />
-            <button className="text-white hover:text-blue-200 text-2xl relative">
+
+            {/* Search */}
+            <form onSubmit={handleSearch}>
+              <input
+                type="text"
+                placeholder="Search products..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="border border-blue-300 px-3 py-1 rounded w-64 focus:outline-none focus:ring-2 focus:ring-white bg-white/10 text-white placeholder-blue-200"
+              />
+            </form>
+
+            {/* Cart */}
+            <Link
+              href="/cart"
+              className="text-white hover:text-blue-200 text-2xl relative"
+            >
               <FiShoppingCart />
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1">3</span>
-            </button>
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1">
+                0
+              </span>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden text-white focus:outline-none text-2xl"
+            className="md:hidden text-white text-2xl"
             onClick={() => setMenuOpen(!menuOpen)}
           >
             {menuOpen ? <FiX /> : <FiMenu />}
@@ -168,36 +242,27 @@ export default function Navbar() {
 
         {/* Mobile Menu */}
         {menuOpen && (
-          <ul className="md:hidden bg-white px-4 pb-4 space-y-2 font-medium">
-            <li><Link href="/" className="block hover:text-blue-600">Home</Link></li>
-
-            {/* Mobile Products Dropdown */}
+          <ul className="md:hidden bg-white px-4 pb-4 space-y-2 font-medium z-[9999] relative">
             <li>
-              <button
-                className="w-full text-left hover:text-blue-600 flex justify-between items-center"
-                onClick={() => setCategoriesOpen(!categoriesOpen)}
-              >
-                Products {categoriesOpen ? "▲" : "▼"}
-              </button>
-              {categoriesOpen && (
-                <ul className="pl-4 mt-1 space-y-1">
-                  {categories.map(cat => (
-                    <li key={cat}>
-                      <Link href={`/products/${cat.toLowerCase()}`} className="block hover:text-blue-600">
-                        {cat}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              )}
+              <Link href="/" className="block hover:text-blue-600">
+                Home
+              </Link>
             </li>
 
-            <li><Link href="/offers" className="block hover:text-blue-600">Offers</Link></li>
-            <li><Link href="/contact" className="block hover:text-blue-600">Contact</Link></li>
+            <li>
+              <Link href="/offers" className="block hover:text-blue-600">
+                Offers
+              </Link>
+            </li>
 
-            {/* Mobile Auth Buttons */}
+            <li>
+              <Link href="/contact" className="block hover:text-blue-600">
+                Contact
+              </Link>
+            </li>
+
             {user ? (
-              <li className="pt-2">
+              <li>
                 <button
                   onClick={handleLogout}
                   className="w-full bg-red-100 text-red-600 py-2 rounded hover:bg-red-200 flex items-center justify-center"
@@ -206,39 +271,31 @@ export default function Navbar() {
                 </button>
               </li>
             ) : (
-              <li className="pt-2 flex space-x-2">
+              <li className="flex space-x-2">
                 <button
                   onClick={() => setAuthModalOpen(true)}
-                  className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+                  className="flex-1 bg-blue-600 text-white py-2 rounded"
                 >
                   Sign In
                 </button>
+
                 <button
                   onClick={() => setAuthModalOpen(true)}
-                  className="flex-1 bg-green-600 text-white py-2 rounded hover:bg-green-700"
+                  className="flex-1 bg-green-600 text-white py-2 rounded"
                 >
                   Join
                 </button>
               </li>
             )}
-
-            {/* Mobile Search + Cart */}
-            <li className="pt-2">
-              <input
-                type="text"
-                placeholder="Search products..."
-                className="border px-3 py-1 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
-              />
-              <button className="w-full bg-gray-100 flex justify-center items-center py-2 rounded text-gray-700 hover:bg-gray-200">
-                <FiShoppingCart className="text-xl mr-2" /> Cart (3)
-              </button>
-            </li>
           </ul>
         )}
       </nav>
 
       {/* Auth Modal */}
-      <AuthModal isOpen={authModalOpen} onClose={() => setAuthModalOpen(false)} />
+      <AuthModal
+        isOpen={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
+      />
     </header>
   );
 }
