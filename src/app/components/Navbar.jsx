@@ -2,20 +2,19 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { FiShoppingCart, FiMenu, FiX, FiUser, FiLogOut } from "react-icons/fi";
 import { useAuth } from "../context/AuthContext";
-import AuthModal from "./AuthModal";
 import Swal from "sweetalert2";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
-  const [authModalOpen, setAuthModalOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   const pathname = usePathname();
+  const router = useRouter();
   const { user, logout, loading, isAdmin } = useAuth();
 
   const categories = [
@@ -111,21 +110,21 @@ export default function Navbar() {
               )}
             </div>
           ) : (
-            <>
-              <button
-                onClick={() => setAuthModalOpen(true)}
-                className="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded"
+            <div className="flex items-center space-x-3">
+              <Link
+                href="/signin"
+                className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded transition duration-200"
               >
                 Sign In
-              </button>
+              </Link>
 
-              <button
-                onClick={() => setAuthModalOpen(true)}
-                className="bg-green-600 hover:bg-green-700 px-3 py-1 rounded"
+              <Link
+                href="/register"
+                className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded transition duration-200"
               >
                 Join
-              </button>
-            </>
+              </Link>
+            </div>
           )}
         </div>
       </div>
@@ -272,30 +271,24 @@ export default function Navbar() {
               </li>
             ) : (
               <li className="flex space-x-2">
-                <button
-                  onClick={() => setAuthModalOpen(true)}
-                  className="flex-1 bg-blue-600 text-white py-2 rounded"
+                <Link
+                  href="/signin"
+                  className="flex-1 bg-blue-600 text-white py-2 rounded text-center hover:bg-blue-700 transition duration-200"
                 >
                   Sign In
-                </button>
+                </Link>
 
-                <button
-                  onClick={() => setAuthModalOpen(true)}
-                  className="flex-1 bg-green-600 text-white py-2 rounded"
+                <Link
+                  href="/register"
+                  className="flex-1 bg-green-600 text-white py-2 rounded text-center hover:bg-green-700 transition duration-200"
                 >
                   Join
-                </button>
+                </Link>
               </li>
             )}
           </ul>
         )}
       </nav>
-
-      {/* Auth Modal */}
-      <AuthModal
-        isOpen={authModalOpen}
-        onClose={() => setAuthModalOpen(false)}
-      />
     </header>
   );
 }
