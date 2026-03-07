@@ -24,11 +24,17 @@ export default function Details({ params }) {
       <div className="flex flex-col lg:flex-row gap-10">
         {/* Product Images */}
         <div className="flex-1 grid grid-cols-1 gap-4">
-          <img
-            src={product.frontImage}
-            alt={product.name}
-            className="w-full h-[500px] object-cover rounded-lg shadow-lg transition-transform duration-500 hover:scale-105"
-          />
+          {product.frontImage ? (
+            <img
+              src={product.frontImage}
+              alt={product.name}
+              className="w-full h-[500px] object-cover rounded-lg shadow-lg transition-transform duration-500 hover:scale-105"
+            />
+          ) : (
+            <div className="w-full h-[500px] bg-gray-200 flex items-center justify-center rounded-lg">
+              <span className="text-gray-400">No Image Available</span>
+            </div>
+          )}
           {product.backImage && (
             <img
               src={product.backImage}

@@ -21,7 +21,13 @@ export default function Details({ params }) {
 
     <div className="p-10 grid grid-cols-2 gap-10">
 
-      <img src={product.frontImage} />
+      {product.frontImage ? (
+        <img src={product.frontImage} alt={product.name} className="w-full h-auto rounded-lg" />
+      ) : (
+        <div className="w-full h-[400px] bg-gray-200 flex items-center justify-center rounded-lg">
+          <span className="text-gray-400">No Image Available</span>
+        </div>
+      )}
 
       <div>
 

@@ -79,7 +79,7 @@ export default function Banner() {
 
   if (loading) {
     return (
-      <div className="w-full h-[80vh] bg-gray-900 flex items-center justify-center">
+      <div className="w-full h-screen bg-gray-900 flex items-center justify-center">
         <div className="flex flex-col items-center space-y-4">
           <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
           <p className="text-white text-lg font-medium">Loading banners...</p>
@@ -89,7 +89,7 @@ export default function Banner() {
   }
 
   return (
-    <div className="w-full h-[80vh] relative overflow-hidden">
+    <div className="w-full h-screen relative overflow-hidden">
       <Swiper
         modules={[Autoplay, Pagination, Navigation, EffectFade]}
         effect="fade"
@@ -110,14 +110,14 @@ export default function Banner() {
       >
         {slides.map((slide, index) => (
           <SwiperSlide key={index}>
-            <div className="relative h-[80vh] w-full">
+            <div className="relative h-screen w-full">
               {/* Background Image */}
               <div 
-                className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+                className="absolute inset-0 bg-cover bg-center bg-fixed"
                 style={{ backgroundImage: `url(${slide.image})` }}
               >
                 {/* Dark Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/30"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-black/15"></div>
               </div>
 
               {/* Content */}

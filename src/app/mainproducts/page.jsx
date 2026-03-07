@@ -47,11 +47,17 @@ export default function MainProductsPage() {
           >
             {/* Product Image */}
             <div className="relative overflow-hidden h-56">
-              <img
-                src={product.frontImage}
-                alt={product.name}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-              />
+              {product.frontImage ? (
+                <img
+                  src={product.frontImage}
+                  alt={product.name}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+              ) : (
+                <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                  <span className="text-gray-400">No Image</span>
+                </div>
+              )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition duration-500"></div>
             </div>
 

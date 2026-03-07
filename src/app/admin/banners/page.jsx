@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import ImageUpload from "@/app/components/ImageUpload";
 import { FaEdit, FaTrash, FaPlus, FaImages, FaEye, FaEyeSlash } from "react-icons/fa";
+import Swal from "sweetalert2";
 
 export default function AdminBannersPage() {
   const [banners, setBanners] = useState([]);
@@ -53,8 +54,19 @@ export default function AdminBannersPage() {
     if (res.ok) {
       fetchBanners();
       resetForm();
+      Swal.fire({
+        icon: 'success',
+        title: editingId ? 'Banner Updated!' : 'Banner Created!',
+        text: editingId ? 'Your banner has been updated successfully.' : 'Your new banner has been created successfully.',
+        timer: 2000,
+        showConfirmButton: false
+      });
     } else {
-      alert("Failed to save banner");
+      Swal.fire({
+        icon: 'error',
+        title: 'Error!',
+        text: 'Failed to save banner. Please try again.'
+      });
     }
   };
 
@@ -74,16 +86,38 @@ export default function AdminBannersPage() {
   };
 
   const handleDelete = async (id) => {
-    if (!confirm("Are you sure you want to delete this banner?")) return;
-
-    const res = await fetch(`/api/banners/${id}`, {
-      method: "DELETE"
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this banner!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel'
     });
 
-    if (res.ok) {
-      fetchBanners();
-    } else {
-      alert("Failed to delete banner");
+    if (result.isConfirmed) {
+      const res = await fetch(`/api/banners/${id}`, {
+        method: "DELETE"
+      });
+
+      if (res.ok) {
+        fetchBanners();
+        Swal.fire({
+          icon: 'success',
+          title: 'Deleted!',
+          text: 'Banner has been deleted.',
+          timer: 2000,
+          showConfirmButton: false
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error!',
+          text: 'Failed to delete banner.'
+        });
+      }
     }
   };
 

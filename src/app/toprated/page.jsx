@@ -23,17 +23,25 @@ export default function TopRated() {
             onClick={() => (window.location.href = `/toprated/${product._id}`)}
           >
             <div className="relative h-64 overflow-hidden">
-              <img
-                src={product.frontImage}
-                alt={product.name}
-                className="w-full h-full object-cover transition duration-500 group-hover:opacity-0"
-              />
-              {product.backImage && (
-                <img
-                  src={product.backImage}
-                  alt={`${product.name} back`}
-                  className="w-full h-full object-cover absolute top-0 left-0 opacity-0 transition duration-500 group-hover:opacity-100"
-                />
+              {product.frontImage ? (
+                <>
+                  <img
+                    src={product.frontImage}
+                    alt={product.name}
+                    className="w-full h-full object-cover transition duration-500 group-hover:opacity-0"
+                  />
+                  {product.backImage && (
+                    <img
+                      src={product.backImage}
+                      alt={`${product.name} back`}
+                      className="w-full h-full object-cover absolute top-0 left-0 opacity-0 transition duration-500 group-hover:opacity-100"
+                    />
+                  )}
+                </>
+              ) : (
+                <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                  <span className="text-gray-400">No Image</span>
+                </div>
               )}
             </div>
 

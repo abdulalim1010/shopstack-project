@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 
 export default function AdminReviewsPage() {
   const [reviews, setReviews] = useState([]);
@@ -20,21 +21,47 @@ export default function AdminReviewsPage() {
   }, []);
 
   const handleDelete = async (id) => {
-    if (!confirm("Are you sure you want to delete this review?")) return;
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this review!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel'
+    });
 
-    try {
-      const res = await fetch(`/api/reviews/${id}`, {
-        method: "DELETE"
-      });
+    if (result.isConfirmed) {
+      try {
+        const res = await fetch(`/api/reviews/${id}`, {
+          method: "DELETE"
+        });
 
-      if (res.ok) {
-        setReviews(reviews.filter(r => r._id !== id));
-      } else {
-        alert("Failed to delete review");
+        if (res.ok) {
+          setReviews(reviews.filter(r => r._id !== id));
+          Swal.fire({
+            icon: 'success',
+            title: 'Deleted!',
+            text: 'Review has been deleted.',
+            timer: 2000,
+            showConfirmButton: false
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: 'Failed to delete review'
+          });
+        }
+      } catch (error) {
+        console.error("Error deleting review:", error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error!',
+          text: 'Error deleting review'
+        });
       }
-    } catch (error) {
-      console.error("Error deleting review:", error);
-      alert("Error deleting review");
     }
   };
 

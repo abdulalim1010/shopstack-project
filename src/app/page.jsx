@@ -11,11 +11,10 @@ export default function Home() {
     <div>
       <Banner />
       <MainProductsPage />
-<TopRated/>
+      <TopRated/>
 
-     <DiscountSection/> 
+      <DiscountSection/> 
       <CustomerReviews/>
-      <Footer/>
     </div>
   );
 }

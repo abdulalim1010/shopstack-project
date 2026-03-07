@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/app/context/AuthContext";
 import { useRouter } from "next/navigation";
 import ImageUpload from "@/app/components/ImageUpload";
+import Swal from "sweetalert2";
 
 export default function AdminProducts() {
   const { user, isAdmin, loading } = useAuth();
@@ -124,29 +125,53 @@ export default function AdminProducts() {
   };
 
   const handleDelete = async (productId) => {
-    if (!confirm("Are you sure you want to delete this product?")) return;
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this product!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel'
+    });
 
-    const endpoint = activeTab === "main" ? "/api/mainproducts" : "/api/toprated";
+    if (result.isConfirmed) {
+      const endpoint = activeTab === "main" ? "/api/mainproducts" : "/api/toprated";
 
-    try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(`${endpoint}/${productId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch(`${endpoint}/${productId}`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-      if (res.ok) {
-        setSuccess("Product deleted successfully");
-        fetchProducts();
-        setTimeout(() => setSuccess(""), 3000);
-      } else {
-        const data = await res.json();
-        setError(data.message || "Failed to delete product");
+        if (res.ok) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Deleted!',
+            text: 'Product has been deleted.',
+            timer: 2000,
+            showConfirmButton: false
+          });
+          fetchProducts();
+        } else {
+          const data = await res.json();
+          Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: data.message || 'Failed to delete product'
+          });
+        }
+      } catch (err) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error!',
+          text: 'Error deleting product'
+        });
       }
-    } catch (err) {
-      setError("Error deleting product");
     }
   };
 

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/app/context/AuthContext";
 import { useRouter } from "next/navigation";
+import Swal from "sweetalert2";
 
 export default function AdminUsers() {
   const { user, isAdmin, loading } = useAuth();
@@ -75,29 +76,51 @@ export default function AdminUsers() {
   };
 
   const handleDeleteUser = async (userId) => {
-    if (!confirm("Are you sure you want to delete this user?")) return;
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this user!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel'
+    });
 
-    try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(`/api/admin/users/${userId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+    if (result.isConfirmed) {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch(`/api/admin/users/${userId}`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-      if (res.ok) {
-        setSuccess("User deleted successfully");
-        fetchUsers();
-        setTimeout(() => setSuccess(""), 3000);
-      } else {
-        const data = await res.json();
-        setError(data.message || "Failed to delete user");
-        setTimeout(() => setError(""), 3000);
+        if (res.ok) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Deleted!',
+            text: 'User has been deleted.',
+            timer: 2000,
+            showConfirmButton: false
+          });
+          fetchUsers();
+        } else {
+          const data = await res.json();
+          Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: data.message || 'Failed to delete user'
+          });
+        }
+      } catch (err) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error!',
+          text: 'Error deleting user'
+        });
       }
-    } catch (err) {
-      setError("Error deleting user");
-      setTimeout(() => setError(""), 3000);
     }
   };
 

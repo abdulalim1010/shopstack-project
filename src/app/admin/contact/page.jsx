@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 
 export default function AdminContactPage() {
   const [contacts, setContacts] = useState([]);
@@ -21,22 +22,48 @@ export default function AdminContactPage() {
   }, []);
 
   const handleDelete = async (id) => {
-    if (!confirm("Are you sure you want to delete this contact message?")) return;
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this message!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel'
+    });
 
-    try {
-      const res = await fetch(`/api/contact/${id}`, {
-        method: "DELETE"
-      });
+    if (result.isConfirmed) {
+      try {
+        const res = await fetch(`/api/contact/${id}`, {
+          method: "DELETE"
+        });
 
-      if (res.ok) {
-        setContacts(contacts.filter(c => c._id !== id));
-        setSelectedContact(null);
-      } else {
-        alert("Failed to delete contact");
+        if (res.ok) {
+          setContacts(contacts.filter(c => c._id !== id));
+          setSelectedContact(null);
+          Swal.fire({
+            icon: 'success',
+            title: 'Deleted!',
+            text: 'Message has been deleted.',
+            timer: 2000,
+            showConfirmButton: false
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: 'Failed to delete contact'
+          });
+        }
+      } catch (error) {
+        console.error("Error deleting contact:", error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error!',
+          text: 'Error deleting contact'
+        });
       }
-    } catch (error) {
-      console.error("Error deleting contact:", error);
-      alert("Error deleting contact");
     }
   };
 
