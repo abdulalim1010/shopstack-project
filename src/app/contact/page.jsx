@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import Swal from "sweetalert2";
 
 export default function ContactPage() {
   const [form, setForm] = useState({
@@ -40,7 +41,13 @@ export default function ContactPage() {
     });
 
     if (res.ok) {
-      alert("Message sent successfully");
+      Swal.fire({
+        icon: 'success',
+        title: 'Message Sent!',
+        text: 'Thank you for contacting us. We will get back to you soon.',
+        timer: 3000,
+        showConfirmButton: false
+      });
       setForm({
         name: "",
         email: "",

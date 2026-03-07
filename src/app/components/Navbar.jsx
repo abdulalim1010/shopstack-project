@@ -2,23 +2,46 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { FiShoppingCart, FiMenu, FiX, FiUser, FiLogOut } from "react-icons/fi";
 import { useAuth } from "../context/AuthContext";
 import AuthModal from "./AuthModal";
+import Swal from "sweetalert2";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   const { user, logout, loading, isAdmin } = useAuth();
 
-  const categories = ["Electronics", "Fashion", "Books", "Sports", "Home & Kitchen"];
+  const categories = ["Helmets", "Wheels", "Parts", "Accessories", "Maintenance"];
 
   const handleLogout = () => {
-    logout();
-    setUserMenuOpen(false);
+    Swal.fire({
+      title: 'Logout?',
+      text: 'Are you sure you want to logout?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, logout!',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        logout();
+        setUserMenuOpen(false);
+        Swal.fire({
+          icon: 'success',
+          title: 'Logged Out!',
+          text: 'You have been logged out successfully.',
+          timer: 2000,
+          showConfirmButton: false
+        });
+      }
+    });
   };
 
   return (
@@ -87,25 +110,25 @@ export default function Navbar() {
       </div>
 
       {/* Main Navigation */}
-      <nav className="bg-white shadow-sm">
+      <nav className="bg-blue-600 shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center py-3">
           
           {/* Left: Logo */}
           <div className="flex items-center">
-            <Link href="/" className="text-2xl font-bold text-gray-800">ShopStack</Link>
+            <Link href="/" className="text-2xl font-bold text-white">ShopStack</Link>
           </div>
 
           {/* Center: Nav Items (Desktop) */}
           <ul className="hidden md:flex space-x-6 font-medium items-center">
-            <li><Link href="/" className="hover:text-blue-600">Home</Link></li>
+            <li><Link href="/" className={`hover:text-white transition ${pathname === '/' ? 'text-white font-bold' : 'text-blue-100'}`}>Home</Link></li>
 
             {/* Products Dropdown */}
             <li className="relative"
                 onMouseEnter={() => setCategoriesOpen(true)}
                 onMouseLeave={() => setCategoriesOpen(false)}>
-              <button className="hover:text-blue-600 flex items-center">Products ▼</button>
+              <button className={`hover:text-white flex items-center transition ${pathname.startsWith('/products') ? 'text-white font-bold' : 'text-blue-100'}`}>Products ▼</button>
               {categoriesOpen && (
-                <ul className="absolute top-full left-0 mt-2 bg-white border shadow-md py-2 w-44">
+                <ul className="absolute top-full left-0 mt-2 bg-white border shadow-md py-2 w-44 z-50">
                   {categories.map(cat => (
                     <li key={cat}>
                       <Link href={`/products/${cat.toLowerCase()}`} className="block px-4 py-2 hover:bg-gray-100">
@@ -117,8 +140,8 @@ export default function Navbar() {
               )}
             </li>
 
-            <li><Link href="/offers" className="hover:text-blue-600">Offers</Link></li>
-            <li><Link href="/contact" className="hover:text-blue-600">Contact</Link></li>
+            <li><Link href="/offers" className={`hover:text-white transition ${pathname === '/offers' ? 'text-white font-bold' : 'text-blue-100'}`}>Offers</Link></li>
+            <li><Link href="/contact" className={`hover:text-white transition ${pathname === '/contact' ? 'text-white font-bold' : 'text-blue-100'}`}>Contact</Link></li>
           </ul>
 
           {/* Right: Search + Cart */}
@@ -126,9 +149,9 @@ export default function Navbar() {
             <input
               type="text"
               placeholder="Search products..."
-              className="border px-3 py-1 rounded w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="border border-blue-400 px-3 py-1 rounded w-64 focus:outline-none focus:ring-2 focus:ring-white bg-white/10 text-white placeholder-blue-200"
             />
-            <button className="text-gray-700 hover:text-blue-600 text-2xl relative">
+            <button className="text-white hover:text-blue-200 text-2xl relative">
               <FiShoppingCart />
               <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1">3</span>
             </button>
@@ -136,7 +159,7 @@ export default function Navbar() {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden text-gray-700 focus:outline-none text-2xl"
+            className="md:hidden text-white focus:outline-none text-2xl"
             onClick={() => setMenuOpen(!menuOpen)}
           >
             {menuOpen ? <FiX /> : <FiMenu />}

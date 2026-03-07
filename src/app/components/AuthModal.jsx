@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import Swal from "sweetalert2";
 
 export default function AuthModal({ isOpen, onClose }) {
   const [isLogin, setIsLogin] = useState(true);
@@ -28,14 +29,33 @@ export default function AuthModal({ isOpen, onClose }) {
     try {
       if (isLogin) {
         await login(formData.email, formData.password);
+        Swal.fire({
+          icon: 'success',
+          title: 'Welcome Back!',
+          text: 'You have successfully logged in.',
+          timer: 2000,
+          showConfirmButton: false
+        });
       } else {
         await register(formData.name, formData.email, formData.password);
+        Swal.fire({
+          icon: 'success',
+          title: 'Account Created!',
+          text: 'Welcome to ShopStack. You can now shop with us.',
+          timer: 2000,
+          showConfirmButton: false
+        });
       }
       onClose();
       // Reset form
       setFormData({ name: "", email: "", password: "" });
     } catch (err) {
       setError(err.message);
+      Swal.fire({
+        icon: 'error',
+        title: 'Login Failed',
+        text: err.message
+      });
     } finally {
       setLoading(false);
     }

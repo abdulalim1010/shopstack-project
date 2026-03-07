@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import Swal from "sweetalert2";
 
 export default function ImageUpload({ 
   value = "", 
@@ -43,9 +44,17 @@ export default function ImageUpload({
       // Try to get error details from response
       try {
         const errorData = await response.json();
-        alert(errorData.error || errorData.details || "Failed to upload image. Please try again.");
+        Swal.fire({
+          icon: 'error',
+          title: 'Upload Failed',
+          text: errorData.error || errorData.details || 'Failed to upload image. Please try again.'
+        });
       } catch {
-        alert("Failed to upload image. Please try again.");
+        Swal.fire({
+          icon: 'error',
+          title: 'Upload Failed',
+          text: 'Failed to upload image. Please try again.'
+        });
       }
     } finally {
       setUploading(false);

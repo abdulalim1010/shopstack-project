@@ -110,7 +110,7 @@ export default function Banner() {
       >
         {slides.map((slide, index) => (
           <SwiperSlide key={index}>
-            <div className="relative h-screen w-full">
+            <div className="relative h-[60vh] md:h-[70vh] lg:h-screen w-full">
               {/* Background Image */}
               <div 
                 className="absolute inset-0 bg-cover bg-center bg-fixed"

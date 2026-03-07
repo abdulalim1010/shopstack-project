@@ -13,23 +13,23 @@ export default function CustomerReviews() {
   }, []);
 
   return (
-    <div className="max-w-7xl mx-auto py-16 px-4">
+    <div className="max-w-7xl mx-auto py-8 md:py-16 px-4">
       {/* Header Section */}
-      <div className="text-center mb-10">
-        <h2 className="text-4xl font-bold text-gray-900 mb-3">
+      <div className="text-center mb-8 md:mb-10">
+        <h2 className="text-2xl md:text-4xl font-bold text-gray-900 mb-3">
           What Our Customers Say
         </h2>
-        <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+        <p className="text-gray-600 text-base md:text-lg max-w-2xl mx-auto px-2">
           Discover why thousands of customers trust us for their shopping needs
         </p>
       </div>
 
       {/* Reviews Row - Horizontal Scroll on Mobile */}
-      <div className="flex gap-6 overflow-x-auto pb-6 mb-8 snap-x">
+      <div className="flex gap-4 md:gap-6 overflow-x-auto pb-6 mb-8 snap-x px-2">
         {reviews.slice(0, 5).map((r, i) => (
           <div 
             key={i} 
-            className="flex-shrink-0 w-80 bg-white border border-gray-200 p-6 rounded-2xl shadow-sm hover:shadow-lg transition-shadow snap-start"
+            className="flex-shrink-0 w-72 md:w-80 bg-white border border-gray-200 p-4 md:p-6 rounded-2xl shadow-sm hover:shadow-lg transition-shadow snap-start"
           >
             {/* Rating Stars */}
             <div className="flex items-center gap-1 mb-3">
