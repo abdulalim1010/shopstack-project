@@ -13,20 +13,24 @@ export default function SearchPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (query.length >= 2) {
-      setLoading(true);
-      fetch(`/api/search?q=${encodeURIComponent(query)}`)
-        .then(res => res.json())
-        .then(data => {
+    const searchProducts = async () => {
+      if (query.length >= 2) {
+        setLoading(true);
+        try {
+          const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+          const data = await res.json();
           setResults(data);
+        } catch (e) {
+          console.error(e);
+        } finally {
           setLoading(false);
-        })
-        .catch(() => {
-          setLoading(false);
-        });
-    } else {
-      setResults([]);
-    }
+        }
+      } else {
+        setResults([]);
+      }
+    };
+    
+    searchProducts();
   }, [query]);
 
   return (
