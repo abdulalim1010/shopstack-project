@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -8,7 +10,7 @@ export default function SearchPage() {
   const searchParams = useSearchParams();
   const query = searchParams.get("q") || "";
   const [results, setResults] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (query.length >= 2) {
@@ -19,18 +21,16 @@ export default function SearchPage() {
           setResults(data);
           setLoading(false);
         })
-        .catch(err => {
-          console.error("Search error:", err);
+        .catch(() => {
           setLoading(false);
         });
     } else {
       setResults([]);
-      setLoading(false);
     }
   }, [query]);
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
+    <div className="max-w-7xl mx-auto p-6 pt-24">
       <h1 className="text-3xl font-bold mb-2 text-gray-800">
         Search Results
       </h1>
@@ -81,7 +81,7 @@ export default function SearchPage() {
         </div>
       ) : query.length >= 2 ? (
         <div className="text-center py-16 bg-white rounded-xl border">
-          <p className="text-gray-500 text-lg">No products found for "{query}"</p>
+          <p className="text-gray-500 text-lg">No products found</p>
           <p className="text-gray-400 mt-2">Try different keywords</p>
         </div>
       ) : null}
