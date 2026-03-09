@@ -2,10 +2,113 @@
 
 import { useEffect, useState, use } from "react";
 import Link from "next/link";
+import { useAuth } from "@/app/context/AuthContext";
+import { useRouter } from "next/navigation";
 
 export default function Details({ params }) {
   const { id } = use(params);
   const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState({ type: "", text: "" });
+  const { user, token } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    fetch(`/api/mainproducts/${id}`)
+      .then((res) => res.json())
+      .then((data) => setProduct(data));
+  }, [id]);
+
+  const handleAddToCart = async () => {
+    if (!token) {
+      setMessage({ type: "error", text: "Please login to add items to cart" });
+      setTimeout(() => {
+        router.push("/signin");
+      }, 2000);
+      return;
+    }
+
+    setLoading(true);
+    setMessage({ type: "", text: "" });
+
+    try {
+      const res = await fetch("/api/cart", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          productId: id,
+          name: product.name,
+          price: product.price,
+          image: product.frontImage,
+          quantity: 1,
+        }),
+      });
+
+      if (res.ok) {
+        setMessage({ type: "success", text: "Added to cart successfully!" });
+      } else {
+        const data = await res.json();
+        setMessage({ type: "error", text: data.message || "Failed to add to cart" });
+      }
+    } catch (error) {
+      setMessage({ type: "error", text: "Something went wrong" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleBuyNow = async () => {
+    if (!token) {
+      setMessage({ type: "error", text: "Please login to purchase" });
+      setTimeout(() => {
+        router.push("/signin");
+      }, 2000);
+      return;
+    }
+
+    setLoading(true);
+    setMessage({ type: "", text: "" });
+
+    try {
+      const products = [{
+        productId: id,
+        name: product.name,
+        price: product.price,
+        image: product.frontImage,
+        quantity: 1,
+      }];
+
+      const res = await fetch("/api/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          products,
+          totalAmount: product.price,
+          clearCart: true,
+        }),
+      });
+
+      if (res.ok) {
+        setMessage({ type: "success", text: "Order placed successfully!" });
+        setTimeout(() => {
+          router.push("/orders");
+        }, 2000);
+      } else {
+        const data = await res.json();
+        setMessage({ type: "error", text: data.message || "Failed to place order" });
+      }
+    } catch (error) {
+      setMessage({ type: "error", text: "Something went wrong" });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetch(`/api/mainproducts/${id}`)
@@ -82,7 +185,7 @@ export default function Details({ params }) {
                 {/* Action Buttons with Gradient Hover */}
                 <div className="flex gap-4 mt-8">
                   <button 
-                    className="flex-1 relative overflow-hidden bg-gray-900 text-white py-4 rounded-xl font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-gray-900/30 group"
+                    className="flex-1 relative overflow-hidden bg-gray-900 text-white py-4 rounded-xl font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-gray-900/30 group disabled:opacity-50 disabled:cursor-not-allowed"
                     style={{
                       background: 'linear-gradient(90deg, #1a1a1a 0%, #333 100%)',
                       backgroundSize: '200% 100%'
@@ -93,16 +196,18 @@ export default function Details({ params }) {
                     onMouseLeave={(e) => {
                       e.target.style.backgroundPosition = '0 0';
                     }}
+                    onClick={handleAddToCart}
+                    disabled={loading || !product.inStock}
                   >
                     <span className="relative z-10 flex items-center justify-center gap-2">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                       </svg>
-                      Add To Cart
+                      {loading ? "Adding..." : "Add To Cart"}
                     </span>
                   </button>
                   <button 
-                    className="flex-1 relative overflow-hidden bg-orange-500 text-white py-4 rounded-xl font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/30"
+                    className="flex-1 relative overflow-hidden bg-orange-500 text-white py-4 rounded-xl font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
                     style={{
                       background: 'linear-gradient(90deg, #f97316 0%, #ea580c 100%)',
                       backgroundSize: '200% 100%'
@@ -113,15 +218,24 @@ export default function Details({ params }) {
                     onMouseLeave={(e) => {
                       e.target.style.backgroundPosition = '0 0';
                     }}
+                    onClick={handleBuyNow}
+                    disabled={loading || !product.inStock}
                   >
                     <span className="relative z-10 flex items-center justify-center gap-2">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                       </svg>
-                      Buy Now
+                      {loading ? "Processing..." : "Buy Now"}
                     </span>
                   </button>
                 </div>
+
+                {/* Message Display */}
+                {message.text && (
+                  <div className={`mt-4 p-3 rounded-lg ${message.type === "success" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+                    {message.text}
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -133,6 +247,134 @@ export default function Details({ params }) {
             href="/mainproducts" 
             className="inline-flex items-center text-gray-600 hover:text-orange-500 transition-colors"
           >
+            {/* Motorcycle Features Section */}
+<div className="mt-20">
+
+  <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
+    Why Riders Choose Premium Motorcycle Gear
+  </h2>
+
+  <div className="grid md:grid-cols-3 gap-8">
+
+    {/* Feature 1 */}
+    <div className="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition">
+
+      <div className="text-orange-500 mb-4">
+        <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-3.866 0-7 1.343-7 3v2c0 1.657 3.134 3 7 3s7-1.343 7-3v-2c0-1.657-3.134-3-7-3z" />
+        </svg>
+      </div>
+
+      <h3 className="text-xl font-semibold mb-3">
+        Maximum Safety
+      </h3>
+
+      <p className="text-gray-600">
+        Premium motorcycle helmets and gear are engineered to provide
+        maximum impact protection. Advanced materials and reinforced
+        shell technology help absorb shock during accidents.
+      </p>
+
+    </div>
+
+    {/* Feature 2 */}
+    <div className="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition">
+
+      <div className="text-orange-500 mb-4">
+        <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M3 6h18M3 14h18M3 18h18" />
+        </svg>
+      </div>
+
+      <h3 className="text-xl font-semibold mb-3">
+        Advanced Ventilation
+      </h3>
+
+      <p className="text-gray-600">
+        Modern helmets include multi-channel ventilation systems that
+        maintain airflow and keep riders cool during long journeys,
+        ensuring maximum comfort on every ride.
+      </p>
+
+    </div>
+
+    {/* Feature 3 */}
+    <div className="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition">
+
+      <div className="text-orange-500 mb-4">
+        <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z" />
+        </svg>
+      </div>
+
+      <h3 className="text-xl font-semibold mb-3">
+        Crystal Clear Vision
+      </h3>
+
+      <p className="text-gray-600">
+        Anti-scratch and anti-fog visors provide riders with a clear
+        field of vision even in extreme weather conditions, helping
+        maintain safety and control on the road.
+      </p>
+
+    </div>
+
+  </div>
+</div>
+
+
+{/* Riding Experience Section */}
+<div className="mt-20 bg-gray-900 text-white rounded-2xl p-12">
+
+  <div className="grid md:grid-cols-2 gap-12 items-center">
+
+    <div>
+      <h2 className="text-3xl font-bold mb-6">
+        Built for Passionate Riders
+      </h2>
+
+      <p className="text-gray-300 leading-relaxed mb-6">
+        Motorcycle riding is not just transportation — it's a lifestyle.
+        High-quality riding gear ensures safety, performance, and comfort
+        whether you're commuting in the city or exploring long highways.
+      </p>
+
+      <p className="text-gray-300 leading-relaxed">
+        Professional helmets combine aerodynamics, lightweight materials,
+        and advanced safety engineering to deliver the ultimate riding
+        experience. Investing in quality gear protects you and enhances
+        your confidence on every ride.
+      </p>
+
+    </div>
+
+    <div className="grid grid-cols-2 gap-6">
+
+      <div className="bg-white/10 backdrop-blur-md p-6 rounded-xl text-center">
+        <h3 className="text-2xl font-bold text-orange-400">100%</h3>
+        <p className="text-gray-300 text-sm">Rider Protection</p>
+      </div>
+
+      <div className="bg-white/10 backdrop-blur-md p-6 rounded-xl text-center">
+        <h3 className="text-2xl font-bold text-orange-400">24/7</h3>
+        <p className="text-gray-300 text-sm">Comfort Ride</p>
+      </div>
+
+      <div className="bg-white/10 backdrop-blur-md p-6 rounded-xl text-center">
+        <h3 className="text-2xl font-bold text-orange-400">Premium</h3>
+        <p className="text-gray-300 text-sm">Build Quality</p>
+      </div>
+
+      <div className="bg-white/10 backdrop-blur-md p-6 rounded-xl text-center">
+        <h3 className="text-2xl font-bold text-orange-400">Pro</h3>
+        <p className="text-gray-300 text-sm">Rider Experience</p>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
