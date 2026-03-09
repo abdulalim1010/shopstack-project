@@ -157,17 +157,21 @@ export default function Navbar() {
               onMouseEnter={() => setCategoriesOpen(true)}
               onMouseLeave={() => setCategoriesOpen(false)}
             >
-              <button className="text-blue-100 hover:text-white flex items-center">
-                Products ▼
+              <button className="text-blue-100 hover:text-white flex items-center transition-colors">
+                Products
+                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
               </button>
 
               {categoriesOpen && (
-                <ul className="absolute top-full left-0 mt-2 bg-white border shadow-lg py-2 w-44 rounded-md z-[9999]">
+                <ul className="absolute top-full left-0 mt-2 bg-white border shadow-xl py-2 w-48 rounded-lg z-[99999] animate-fadeIn">
                   {categories.map((cat) => (
                     <li key={cat}>
                       <Link
                         href={`/products/${cat.toLowerCase()}`}
-                        className="block px-4 py-2 hover:bg-gray-100"
+                        className="block px-4 py-3 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 text-gray-700 hover:text-blue-600 transition-all duration-200 font-medium"
+                        onClick={() => setCategoriesOpen(false)}
                       >
                         {cat}
                       </Link>
@@ -243,19 +247,55 @@ export default function Navbar() {
         {menuOpen && (
           <ul className="md:hidden bg-white px-4 pb-4 space-y-2 font-medium z-[9999] relative">
             <li>
-              <Link href="/" className="block hover:text-blue-600">
+              <Link href="/" className="block hover:text-blue-600 py-2">
                 Home
               </Link>
             </li>
 
+            {/* Mobile Products Dropdown */}
             <li>
-              <Link href="/offers" className="block hover:text-blue-600">
+              <button
+                onClick={() => setCategoriesOpen(!categoriesOpen)}
+                className="flex items-center justify-between w-full py-2 text-gray-700"
+              >
+                <span>Products</span>
+                <svg 
+                  className={`w-4 h-4 transition-transform ${categoriesOpen ? 'rotate-180' : ''}`} 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              {categoriesOpen && (
+                <ul className="pl-4 space-y-2 border-l-2 border-blue-200 mt-2">
+                  {categories.map((cat) => (
+                    <li key={cat}>
+                      <Link
+                        href={`/products/${cat.toLowerCase()}`}
+                        className="block py-2 text-blue-600 hover:text-blue-800"
+                        onClick={() => {
+                          setMenuOpen(false);
+                          setCategoriesOpen(false);
+                        }}
+                      >
+                        {cat}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </li>
+
+            <li>
+              <Link href="/offers" className="block hover:text-blue-600 py-2">
                 Offers
               </Link>
             </li>
 
             <li>
-              <Link href="/contact" className="block hover:text-blue-600">
+              <Link href="/contact" className="block hover:text-blue-600 py-2">
                 Contact
               </Link>
             </li>

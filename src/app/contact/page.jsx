@@ -99,7 +99,19 @@ export default function ContactPage() {
               {banner?.buttonText || "Discover Premium Parts to Enhance Performance."}
             </p>
 
-            <Link href={banner?.buttonLink || "/mainproducts"} className="bg-white text-black px-6 py-3 rounded-full w-40 text-center">
+            <Link href={banner?.buttonLink || "/mainproducts"} 
+              className="relative overflow-hidden bg-white text-black px-6 py-3 rounded-full w-40 text-center transition transform hover:scale-105 hover:shadow-lg"
+              style={{
+                background: 'linear-gradient(90deg, #ffffff 0%, #f3f4f6 100%)',
+                backgroundSize: '200% 100%'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.backgroundPosition = '100% 0';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.backgroundPosition = '0 0';
+              }}
+            >
               {banner?.buttonText || "Shop Now"}
             </Link>
 
@@ -179,7 +191,19 @@ export default function ContactPage() {
               }
             />
 
-            <button className="bg-black text-white px-8 py-3 rounded-full">
+            <button 
+              className="relative overflow-hidden bg-black text-white px-8 py-3 rounded-full transition transform hover:scale-105 hover:shadow-lg hover:shadow-black/30"
+              style={{
+                background: 'linear-gradient(90deg, #1a1a1a 0%, #333333 100%)',
+                backgroundSize: '200% 100%'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.backgroundPosition = '100% 0';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.backgroundPosition = '0 0';
+              }}
+            >
               Send Message
             </button>
 

@@ -53,9 +53,17 @@ export default function CustomerReviews() {
 
             {/* Customer Info */}
             <div className="flex items-center gap-3 pt-4 border-t border-gray-100">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-bold">
-                {r.name.charAt(0).toUpperCase()}
-              </div>
+              {r.image ? (
+                <img 
+                  src={r.image} 
+                  alt={r.name}
+                  className="w-10 h-10 rounded-full object-cover"
+                />
+              ) : (
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-bold">
+                  {r.name.charAt(0).toUpperCase()}
+                </div>
+              )}
               <div>
                 <p className="font-semibold text-gray-900">{r.name}</p>
                 <p className="text-sm text-gray-500">{r.product}</p>

@@ -64,7 +64,17 @@ export default function ReviewsPage() {
           {/* Add Review Button */}
           <button
             onClick={() => setShowForm(!showForm)}
-            className="mt-6 bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-full font-semibold transition-colors inline-flex items-center gap-2"
+            className="mt-6 relative overflow-hidden bg-orange-500 text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/30 inline-flex items-center gap-2"
+            style={{
+              background: 'linear-gradient(90deg, #f97316 0%, #ea580c 100%)',
+              backgroundSize: '200% 100%'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.backgroundPosition = '100% 0';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.backgroundPosition = '0 0';
+            }}
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -155,7 +165,17 @@ export default function ReviewsPage() {
 
               <button 
                 type="submit" 
-                className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-lg transition-colors"
+                className="w-full relative overflow-hidden bg-orange-500 text-white font-semibold py-4 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/30"
+                style={{
+                  background: 'linear-gradient(90deg, #f97316 0%, #ea580c 100%)',
+                  backgroundSize: '200% 100%'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundPosition = '100% 0';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundPosition = '0 0';
+                }}
               >
                 Submit Review
               </button>

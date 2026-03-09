@@ -384,6 +384,19 @@ export default function AdminBannersPage() {
 
       {/* Banner Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Add New Banner Card - Always visible */}
+        <div 
+          className="bg-white rounded-2xl shadow-sm border-2 border-dashed border-gray-300 overflow-hidden transition-transform hover:shadow-md hover:border-orange-400 cursor-pointer group"
+          onClick={() => setShowForm(true)}
+        >
+          <div className="h-48 bg-gray-50 flex flex-col items-center justify-center text-gray-400 group-hover:bg-orange-50 group-hover:text-orange-500 transition-colors">
+            <FaPlus className="text-4xl mb-2" />
+            <span className="font-medium">Add New Banner</span>
+          </div>
+          <div className="p-5 text-center">
+            <p className="text-gray-500 text-sm">Click to add a new banner to your slider</p>
+          </div>
+        </div>
         {banners.map((banner) => (
           <div 
             key={banner._id} 

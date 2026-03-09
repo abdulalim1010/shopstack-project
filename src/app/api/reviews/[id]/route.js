@@ -7,7 +7,7 @@ export async function DELETE(req, { params }) {
 
   try {
     const client = await clientPromise;
-    const db = client.db("shopstackDB");
+    const db = client.db("shopstacksDB");
 
     const result = await db
       .collection("reviews")

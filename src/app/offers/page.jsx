@@ -71,14 +71,32 @@ export default function OfferPage() {
               <div className="flex gap-4">
                 <Link
                   href={offer.buttonLink || "/mainproducts"}
-                  className="bg-orange-500 px-8 py-4 rounded-lg font-semibold hover:bg-orange-600 transition transform hover:scale-105"
+                  className="relative overflow-hidden bg-orange-500 px-8 py-4 rounded-lg font-semibold hover:shadow-lg hover:shadow-orange-500/30 transition transform hover:scale-105"
+                  style={{
+                    background: 'linear-gradient(90deg, #f97316 0%, #ea580c 100%)',
+                    backgroundSize: '200% 100%'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.backgroundPosition = '100% 0';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.backgroundPosition = '0 0';
+                  }}
                 >
                   {offer.buttonText || "Shop Now"}
                 </Link>
 
                 <Link
                   href="/contact"
-                  className="border border-white px-8 py-4 rounded-lg hover:bg-white hover:text-black transition"
+                  className="relative overflow-hidden border border-white px-8 py-4 rounded-lg hover:bg-white hover:text-black transition"
+                  onMouseEnter={(e) => {
+                    e.target.style.backgroundColor = 'white';
+                    e.target.style.color = 'black';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.backgroundColor = 'transparent';
+                    e.target.style.color = 'white';
+                  }}
                 >
                   Contact
                 </Link>
