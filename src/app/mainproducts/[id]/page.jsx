@@ -60,7 +60,7 @@ export default function Details({ params }) {
     }
   };
 
-  const handleBuyNow = async () => {
+  const handleBuyNow = () => {
     if (!token) {
       setMessage({ type: "error", text: "Please login to purchase" });
       setTimeout(() => {
@@ -69,45 +69,15 @@ export default function Details({ params }) {
       return;
     }
 
-    setLoading(true);
-    setMessage({ type: "", text: "" });
-
-    try {
-      const products = [{
-        productId: id,
-        name: product.name,
-        price: product.price,
-        image: product.frontImage,
-        quantity: 1,
-      }];
-
-      const res = await fetch("/api/orders", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          products,
-          totalAmount: product.price,
-          clearCart: true,
-        }),
-      });
-
-      if (res.ok) {
-        setMessage({ type: "success", text: "Order placed successfully!" });
-        setTimeout(() => {
-          router.push("/orders");
-        }, 2000);
-      } else {
-        const data = await res.json();
-        setMessage({ type: "error", text: data.message || "Failed to place order" });
-      }
-    } catch (error) {
-      setMessage({ type: "error", text: "Something went wrong" });
-    } finally {
-      setLoading(false);
-    }
+    // Redirect to checkout info page with product details
+    const params = new URLSearchParams();
+    params.set("productId", id);
+    params.set("productName", product.name);
+    params.set("productPrice", product.price.toString());
+    params.set("productImage", product.frontImage || "");
+    params.set("quantity", "1");
+    
+    router.push(`/checkout/info?${params.toString()}`);
   };
 
   useEffect(() => {

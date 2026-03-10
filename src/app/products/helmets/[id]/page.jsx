@@ -1,12 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { useAuth } from "@/app/context/AuthContext";
 
 export default function HelmetDetails() {
   const params = useParams();
   const id = params?.id;
+  const { token } = useAuth();
+  const router = useRouter();
   const [helmet, setHelmet] = useState(null);
   const [loading, setLoading] = useState(() => !id);
   const [error, setError] = useState(null);
@@ -40,6 +43,24 @@ export default function HelmetDetails() {
       isMounted = false;
     };
   }, [id]);
+
+  const handleBuyNow = () => {
+    if (!token) {
+      alert("Please login to purchase");
+      router.push("/signin");
+      return;
+    }
+
+    // Redirect to checkout info page with product details
+    const params = new URLSearchParams();
+    params.set("productId", id);
+    params.set("productName", helmet.name);
+    params.set("productPrice", helmet.price.toString());
+    params.set("productImage", helmet.image || "");
+    params.set("quantity", "1");
+    
+    router.push(`/checkout/info?${params.toString()}`);
+  };
 
   if (loading) {
     return (
@@ -180,6 +201,7 @@ export default function HelmetDetails() {
                   onMouseLeave={(e) => {
                     if (helmet.inStock) e.target.style.backgroundPosition = '0 0';
                   }}
+                  onClick={handleBuyNow}
                 >
                   <span className="relative z-10 flex items-center justify-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

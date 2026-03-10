@@ -56,7 +56,7 @@ export async function POST(request) {
     }
 
     const body = await request.json();
-    const { products, totalAmount, clearCart } = body;
+    const { products, totalAmount, clearCart, shippingInfo, paymentMethod, paymentStatus, transactionId, senderPhone, adminPhone } = body;
 
     if (!products || !Array.isArray(products) || products.length === 0) {
       return NextResponse.json(
@@ -73,7 +73,7 @@ export async function POST(request) {
     }
 
     // Create order
-    const order = await OrderModel.create(decoded.id, products, totalAmount);
+    const order = await OrderModel.create(decoded.id, products, totalAmount, shippingInfo, paymentMethod, paymentStatus);
 
     // Clear cart if requested
     if (clearCart) {

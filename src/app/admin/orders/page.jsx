@@ -107,6 +107,9 @@ export default function AdminOrdersPage() {
                   Total
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Payment
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -147,6 +150,14 @@ export default function AdminOrdersPage() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     ${order.totalAmount}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-xs">
+                      <span className={`px-2 py-1 rounded-full ${order.paymentStatus === "paid" ? "bg-green-100 text-green-800" : order.paymentStatus === "pending_verification" ? "bg-yellow-100 text-yellow-800" : "bg-gray-100 text-gray-800"}`}>
+                        {order.paymentStatus === "paid" ? "Paid" : order.paymentStatus === "pending_verification" ? "Pending Verify" : "Pending"}
+                      </span>
+                      <p className="mt-1 text-gray-500 capitalize">{order.paymentMethod?.replace(/_/g, " ")}</p>
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(order.status)}`}>
@@ -204,6 +215,69 @@ export default function AdminOrdersPage() {
                 <h3 className="text-sm font-medium text-gray-500 mb-2">Customer Information</h3>
                 <p className="text-gray-900 font-medium">{selectedOrder.user?.name}</p>
                 <p className="text-gray-500 text-sm">{selectedOrder.user?.email}</p>
+              </div>
+
+              {/* Shipping Information */}
+              {(selectedOrder.shippingInfo || selectedOrder.shippingInfo?.phone || selectedOrder.shippingInfo?.address) && (
+                <div className="mb-6 p-4 bg-blue-50 rounded-lg">
+                  <h3 className="text-sm font-medium text-blue-800 mb-2">Shipping Information</h3>
+                  {selectedOrder.shippingInfo?.name && (
+                    <p className="text-gray-900"><strong>Name:</strong> {selectedOrder.shippingInfo.name}</p>
+                  )}
+                  {selectedOrder.shippingInfo?.phone && (
+                    <p className="text-gray-900"><strong>Phone:</strong> {selectedOrder.shippingInfo.phone}</p>
+                  )}
+                  {selectedOrder.shippingInfo?.email && (
+                    <p className="text-gray-900"><strong>Email:</strong> {selectedOrder.shippingInfo.email}</p>
+                  )}
+                  {selectedOrder.shippingInfo?.address && (
+                    <p className="text-gray-900"><strong>Address:</strong> {selectedOrder.shippingInfo.address}</p>
+                  )}
+                  {selectedOrder.shippingInfo?.city && (
+                    <p className="text-gray-900"><strong>City:</strong> {selectedOrder.shippingInfo.city}</p>
+                  )}
+                  {selectedOrder.shippingInfo?.zipCode && (
+                    <p className="text-gray-900"><strong>Zip Code:</strong> {selectedOrder.shippingInfo.zipCode}</p>
+                  )}
+                  {selectedOrder.shippingInfo?.country && (
+                    <p className="text-gray-900"><strong>Country:</strong> {selectedOrder.shippingInfo.country}</p>
+                  )}
+                </div>
+              )}
+
+              {/* Payment Information */}
+              <div className="mb-6 p-4 bg-green-50 rounded-lg">
+                <h3 className="text-sm font-medium text-green-800 mb-2">Payment Information</h3>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <p className="text-gray-500 text-xs">Payment Method</p>
+                    <p className="text-gray-900 font-medium capitalize">{selectedOrder.paymentMethod?.replace(/_/g, " ") || "Not specified"}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500 text-xs">Payment Status</p>
+                    <p className={`font-medium capitalize ${selectedOrder.paymentStatus === "paid" ? "text-green-600" : selectedOrder.paymentStatus === "pending_verification" ? "text-yellow-600" : "text-gray-600"}`}>
+                      {selectedOrder.paymentStatus?.replace(/_/g, " ") || "Pending"}
+                    </p>
+                  </div>
+                  {selectedOrder.transactionId && (
+                    <div className="col-span-2">
+                      <p className="text-gray-500 text-xs">Transaction ID</p>
+                      <p className="text-gray-900 font-mono bg-white p-2 rounded border">{selectedOrder.transactionId}</p>
+                    </div>
+                  )}
+                  {selectedOrder.senderPhone && (
+                    <div>
+                      <p className="text-gray-500 text-xs">Customer Phone (bKash)</p>
+                      <p className="text-gray-900">{selectedOrder.senderPhone}</p>
+                    </div>
+                  )}
+                  {selectedOrder.adminPhone && (
+                    <div>
+                      <p className="text-gray-500 text-xs">Admin Phone</p>
+                      <p className="text-gray-900">{selectedOrder.adminPhone}</p>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Products */}

@@ -2,10 +2,13 @@
 
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/context/AuthContext";
 
 export default function Details({ params }) {
   const { id } = use(params);
-
+  const { token } = useAuth();
+  const router = useRouter();
   const [product, setProduct] = useState(null);
 
   useEffect(() => {
@@ -15,6 +18,24 @@ export default function Details({ params }) {
       .then(data => setProduct(data));
 
   }, [id]);
+
+  const handleBuyNow = () => {
+    if (!token) {
+      alert("Please login to purchase");
+      router.push("/signin");
+      return;
+    }
+
+    // Redirect to checkout info page with product details
+    const params = new URLSearchParams();
+    params.set("productId", id);
+    params.set("productName", product.name);
+    params.set("productPrice", product.price.toString());
+    params.set("productImage", product.frontImage || "");
+    params.set("quantity", "1");
+    
+    router.push(`/checkout/info?${params.toString()}`);
+  };
 
   if (!product) return (
     <div className="min-h-screen flex items-center justify-center">
@@ -115,6 +136,7 @@ export default function Details({ params }) {
                     onMouseLeave={(e) => {
                       e.target.style.backgroundPosition = '0 0';
                     }}
+                    onClick={handleBuyNow}
                   >
                     <span className="relative z-10 flex items-center justify-center gap-2">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

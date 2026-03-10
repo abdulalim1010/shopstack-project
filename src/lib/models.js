@@ -237,9 +237,11 @@ export const OrderModel = {
    * @param {string} userId - User ID
    * @param {Array} products - Array of products
    * @param {number} totalAmount - Total order amount
+   * @param {Object} shippingInfo - Shipping information
+   * @param {string} paymentMethod - Payment method
    * @returns {Object} Created order
    */
-  async create(userId, products, totalAmount) {
+  async create(userId, products, totalAmount, shippingInfo = null, paymentMethod = null, paymentStatus = "pending") {
     const client = await clientPromise;
     const db = client.db(DB_NAME);
     const { ObjectId } = await import("mongodb");
@@ -255,7 +257,9 @@ export const OrderModel = {
       })),
       totalAmount,
       status: "pending",
-      paymentStatus: "pending",
+      paymentStatus: paymentStatus || "pending",
+      paymentMethod: paymentMethod || "pending",
+      shippingInfo: shippingInfo || null,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
