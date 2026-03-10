@@ -10,14 +10,55 @@ export default function Details({ params }) {
   const { token } = useAuth();
   const router = useRouter();
   const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState({ type: "", text: "" });
 
   useEffect(() => {
-
     fetch(`/api/toprated/${id}`)
       .then(res => res.json())
       .then(data => setProduct(data));
-
   }, [id]);
+
+  const handleAddToCart = async () => {
+    if (!token) {
+      setMessage({ type: "error", text: "Please login to add items to cart" });
+      setTimeout(() => {
+        router.push("/signin");
+      }, 2000);
+      return;
+    }
+
+    setLoading(true);
+    setMessage({ type: "", text: "" });
+
+    try {
+      const res = await fetch("/api/cart", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          productId: id,
+          name: product.name,
+          price: product.price,
+          image: product.frontImage,
+          quantity: 1,
+        }),
+      });
+
+      if (res.ok) {
+        setMessage({ type: "success", text: "Added to cart successfully!" });
+      } else {
+        const data = await res.json();
+        setMessage({ type: "error", text: data.message || "Failed to add to cart" });
+      }
+    } catch (error) {
+      setMessage({ type: "error", text: "Something went wrong" });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleBuyNow = () => {
     if (!token) {
@@ -105,7 +146,7 @@ export default function Details({ params }) {
                 {/* Action Buttons with Gradient Hover */}
                 <div className="flex gap-4 mt-8">
                   <button 
-                    className="flex-1 relative overflow-hidden bg-gray-900 text-white py-4 rounded-xl font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-gray-900/30"
+                    className="flex-1 relative overflow-hidden bg-gray-900 text-white py-4 rounded-xl font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-gray-900/30 disabled:opacity-50 disabled:cursor-not-allowed"
                     style={{
                       background: 'linear-gradient(90deg, #1a1a1a 0%, #333 100%)',
                       backgroundSize: '200% 100%'
@@ -116,16 +157,18 @@ export default function Details({ params }) {
                     onMouseLeave={(e) => {
                       e.target.style.backgroundPosition = '0 0';
                     }}
+                    onClick={handleAddToCart}
+                    disabled={loading || !product.inStock}
                   >
                     <span className="relative z-10 flex items-center justify-center gap-2">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                       </svg>
-                      Add To Cart
+                      {loading ? "Adding..." : "Add To Cart"}
                     </span>
                   </button>
                   <button 
-                    className="flex-1 relative overflow-hidden bg-orange-500 text-white py-4 rounded-xl font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/30"
+                    className="flex-1 relative overflow-hidden bg-orange-500 text-white py-4 rounded-xl font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
                     style={{
                       background: 'linear-gradient(90deg, #f97316 0%, #ea580c 100%)',
                       backgroundSize: '200% 100%'
@@ -137,15 +180,23 @@ export default function Details({ params }) {
                       e.target.style.backgroundPosition = '0 0';
                     }}
                     onClick={handleBuyNow}
+                    disabled={loading || !product.inStock}
                   >
                     <span className="relative z-10 flex items-center justify-center gap-2">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                       </svg>
-                      Buy Now
+                      {loading ? "Processing..." : "Buy Now"}
                     </span>
                   </button>
                 </div>
+
+                {/* Message Display */}
+                {message.text && (
+                  <div className={`mt-4 p-3 rounded-lg ${message.type === "success" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+                    {message.text}
+                  </div>
+                )}
               </div>
             </div>
           </div>

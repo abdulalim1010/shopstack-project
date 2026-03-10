@@ -82,3 +82,45 @@ export async function POST(request) {
     );
   }
 }
+
+export async function DELETE(request) {
+  try {
+    // Verify token
+    const token = request.headers.get("authorization")?.replace("Bearer ", "");
+    
+    if (!token) {
+      return NextResponse.json(
+        { message: "Authentication required" },
+        { status: 401 }
+      );
+    }
+
+    const decoded = verifyToken(token);
+    
+    if (!decoded) {
+      return NextResponse.json(
+        { message: "Invalid token" },
+        { status: 401 }
+      );
+    }
+
+    const { searchParams } = new URL(request.url);
+    const itemId = searchParams.get("itemId");
+
+    if (!itemId) {
+      return NextResponse.json(
+        { message: "Item ID is required" },
+        { status: 400 }
+      );
+    }
+
+    await CartModel.removeItem(itemId);
+    return NextResponse.json({ message: "Item removed from cart" });
+  } catch (error) {
+    console.error("Remove from cart error:", error);
+    return NextResponse.json(
+      { message: "Failed to remove item from cart" },
+      { status: 500 }
+    );
+  }
+}

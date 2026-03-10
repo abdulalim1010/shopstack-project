@@ -99,6 +99,14 @@ export default function Navbar() {
                     Profile
                   </Link>
 
+                  <Link
+                    href="/orders"
+                    className="block px-4 py-2 hover:bg-gray-100"
+                    onClick={() => setUserMenuOpen(false)}
+                  >
+                    My Orders
+                  </Link>
+
                   <button
                     onClick={handleLogout}
                     className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center text-red-600"
