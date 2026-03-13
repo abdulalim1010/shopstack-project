@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/app/context/AuthContext";
 import { triggerPurchaseNotification } from "@/lib/notifications";
 
-export default function PaymentSuccessPage() {
+function PaymentSuccessContent() {
   const searchParams = useSearchParams();
   const { user } = useAuth();
   const [order, setOrder] = useState(null);
@@ -24,9 +24,20 @@ export default function PaymentSuccessPage() {
 
   // Trigger purchase/love notification on page load
   useEffect(() => {
-    // Trigger love/purchase notification
+    // Trigger love/purchase notification (only runs on client)
     triggerPurchaseNotification("Thank you for your purchase!");
   }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 pt-24 pb-12 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading order details...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 pt-24 pb-12">
@@ -155,5 +166,26 @@ export default function PaymentSuccessPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Loading component for Suspense boundary
+function LoadingState() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 pt-24 pb-12 flex items-center justify-center">
+      <div className="text-center">
+        <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+        <p className="text-gray-600">Loading...</p>
+      </div>
+    </div>
+  );
+}
+
+// Main page component with Suspense boundary for dynamic searchParams
+export default function PaymentSuccessPage() {
+  return (
+    <Suspense fallback={<LoadingState />}>
+      <PaymentSuccessContent />
+    </Suspense>
   );
 }
