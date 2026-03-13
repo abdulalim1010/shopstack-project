@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { verifyToken } from "@/lib/auth";
 import { OrderModel, CartModel } from "@/lib/models";
+import clientPromise from "@/lib/mongodb";
+
+const DB_NAME = process.env.MONGODB_DB || "shopstacksDB";
 
 export async function GET(request) {
   try {
@@ -78,6 +81,26 @@ export async function POST(request) {
     // Clear cart if requested
     if (clearCart) {
       await CartModel.clearCart(decoded.id);
+    }
+
+    // Create notification for the order
+    try {
+      const client = await clientPromise;
+      const db = client.db(DB_NAME);
+      
+      const productNames = products.map(p => p.name).join(", ");
+      
+      await db.collection("notifications").insertOne({
+        userId: decoded.id,
+        type: "order",
+        title: "Order Placed",
+        message: `Your order for ${productNames} has been placed successfully!`,
+        orderId: order._id?.toString(),
+        read: false,
+        createdAt: new Date(),
+      });
+    } catch (notifError) {
+      console.error("Failed to create notification:", notifError);
     }
 
     return NextResponse.json(order, { status: 201 });

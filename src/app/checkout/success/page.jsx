@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/app/context/AuthContext";
+import { triggerPurchaseNotification } from "@/lib/notifications";
 
 export default function PaymentSuccessPage() {
   const searchParams = useSearchParams();
@@ -20,6 +21,12 @@ export default function PaymentSuccessPage() {
   const customerAddress = searchParams.get("customerAddress");
   const productName = searchParams.get("productName");
   const transactionId = searchParams.get("transactionId");
+
+  // Trigger purchase/love notification on page load
+  useEffect(() => {
+    // Trigger love/purchase notification
+    triggerPurchaseNotification("Thank you for your purchase!");
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 pt-24 pb-12">

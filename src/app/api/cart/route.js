@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { verifyToken } from "@/lib/auth";
 import { CartModel } from "@/lib/models";
+import clientPromise from "@/lib/mongodb";
+
+const DB_NAME = process.env.MONGODB_DB || "shopstacksDB";
 
 export async function GET(request) {
   try {
@@ -72,6 +75,24 @@ export async function POST(request) {
       image,
       quantity: quantity || 1,
     });
+
+    // Create cart notification
+    try {
+      const client = await clientPromise;
+      const db = client.db(DB_NAME);
+      
+      await db.collection("notifications").insertOne({
+        userId: decoded.id,
+        type: "cart",
+        title: "Added to Cart",
+        message: `${name} has been added to your cart!`,
+        productId: productId,
+        read: false,
+        createdAt: new Date(),
+      });
+    } catch (notifError) {
+      console.error("Failed to create notification:", notifError);
+    }
 
     return NextResponse.json(cartItem, { status: 201 });
   } catch (error) {

@@ -3,6 +3,7 @@ import clientPromise from "@/lib/mongodb";
 
 const DB_NAME = process.env.MONGODB_DB || "shopstacksDB";
 const ORDERS_COLLECTION = "orders";
+const NOTIFICATIONS_COLLECTION = "notifications";
 
 export async function GET(request) {
   try {
@@ -40,6 +41,17 @@ export async function GET(request) {
             },
           }
         );
+
+        // Create payment notification
+        await db.collection(NOTIFICATIONS_COLLECTION).insertOne({
+          userId: null, // Will be linked to order
+          type: "payment",
+          title: "Payment Confirmed",
+          message: `Payment of ${amount} received successfully! Your order is now confirmed.`,
+          orderId: orderId,
+          read: false,
+          createdAt: new Date(),
+        });
       }
 
       // Redirect to orders page with success message

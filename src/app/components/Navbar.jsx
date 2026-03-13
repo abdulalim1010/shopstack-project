@@ -3,9 +3,10 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { FiShoppingCart, FiMenu, FiX, FiUser, FiLogOut } from "react-icons/fi";
+import { FiShoppingCart, FiMenu, FiX, FiUser, FiLogOut, FiHeart } from "react-icons/fi";
 import { useAuth } from "../context/AuthContext";
 import Swal from "sweetalert2";
+import Notifications from "./Notifications";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -240,6 +241,9 @@ export default function Navbar() {
                 0
               </span>
             </Link>
+
+            {/* Notifications */}
+            <Notifications />
           </div>
 
           {/* Mobile Menu Button */}

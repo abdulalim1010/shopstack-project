@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 
 // SSL Commerz Configuration
-// Replace these with your actual SSL Commerz credentials
+// Your SSL Commerz sandbox credentials
 const SSL_CONFIG = {
-  store_id: "your_store_id",
-  store_password: "your_store_password",
+  store_id: "alim69b3095f32227",
+  store_password: "alim69b3095f32227@ssl",
   is_live: false, // Set to true for production
   base_url: "https://sandbox.sslcommerz.com",
   api_url: "https://sandbox.sslcommerz.com/gwprocess/v4/api.php",
@@ -54,19 +54,7 @@ export async function POST(request) {
       ship_address: customerAddress || "Not provided",
     };
 
-    // For demo purposes, return a simulated response
-    // In production, you would make actual API call to SSL Commerz
-    if (SSL_CONFIG.is_live === false && (SSL_CONFIG.store_id === "your_store_id" || SSL_CONFIG.store_password === "your_store_password")) {
-      // Demo mode - simulate successful payment redirect
-      return NextResponse.json({
-        status: "success",
-        message: "Demo mode: Payment processed successfully",
-        GatewayPageURL: null, // Will trigger success flow in demo
-        orderId: orderId,
-      });
-    }
-
-    // Make actual API call to SSL Commerz
+    // Make actual API call to SSL Commerz sandbox
     const formData = new URLSearchParams();
     Object.keys(postData).forEach((key) => {
       formData.append(key, postData[key]);

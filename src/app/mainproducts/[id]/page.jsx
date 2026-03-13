@@ -4,6 +4,7 @@ import { useEffect, useState, use } from "react";
 import Link from "next/link";
 import { useAuth } from "@/app/context/AuthContext";
 import { useRouter } from "next/navigation";
+import { triggerCartNotification } from "@/lib/notifications";
 
 export default function Details({ params }) {
   const { id } = use(params);
@@ -49,6 +50,8 @@ export default function Details({ params }) {
 
       if (res.ok) {
         setMessage({ type: "success", text: "Added to cart successfully!" });
+        // Trigger cart notification
+        triggerCartNotification("Added to cart!");
       } else {
         const data = await res.json();
         setMessage({ type: "error", text: data.message || "Failed to add to cart" });
